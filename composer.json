@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.2",
         "cviebrock/eloquent-sluggable": "^11.0",
-        "filament/filament": "^3.2",
+        "filament/filament": "^3.2.0",
         "jantinnerezo/livewire-alert": "^3.0",
         "laravel/cashier": "^15.3",
         "laravel/cashier-paddle": "^2.4",
