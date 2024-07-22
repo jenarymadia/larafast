@@ -87,9 +87,9 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         // Check if user can access panel,
-        return str_ends_with($this->email, '@washmaster.com.au');
+        //        return str_ends_with($this->email, '@yourdomain.com') && $this->hasVerifiedEmail();
 
-        // return $this->is_admin || $this->hasRole('admin');
+        return $this->is_admin || $this->hasRole('admin');
     }
 
     public function trialIsUsed()
