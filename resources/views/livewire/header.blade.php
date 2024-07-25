@@ -12,10 +12,7 @@
             </ul>
         </div>
         <a href="/" class="flex flex-row items-center justify-center font-bold text-md">
-            <img class="w-16" src="{{ asset('/images/logo.svg') }}" alt="">
-            <span class="ml-2 flex flex-col items-start">
-                    <span class="leading-4 text-secondary">{{ __('Your Startup Name') }}</span>
-                </span>
+            <img src="{{ asset('/images/logo.svg') }}" alt="">
         </a>
     </div>
     <div class="navbar-center hidden lg:flex">
