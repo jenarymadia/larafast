@@ -42,7 +42,7 @@ Route::get('og-image/{title?}/{description?}', OgImageController::class)->name('
 Route::get('og-image-testing', function () {
     return view('seo.image', [
         'title' => 'Your dynamic og image',
-        'description' => 'Your dynamic og image descriptioon', // optional
+        'description' => 'Your dynamic og image description', // optional
     ]);
 });
 
