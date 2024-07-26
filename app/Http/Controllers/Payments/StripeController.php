@@ -11,6 +11,11 @@ class StripeController extends Controller
 {
     public function subscriptionCheckout(Request $request, $price)
     {
+        if($price == "starter") {
+            $price = "fb4a956fae9c2cf06b290fe843cc53b08343cd94cb7f2089ef82ff95d11927f7";
+        }else{
+            $price = "price_1PfzKcLfkCrXBcZd0kwQRTvS";
+        }
         $user = $request->user();
 
         if ($user->subscribedToPrice($price)) {
