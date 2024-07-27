@@ -19,7 +19,7 @@
     </head>
     <body class="font-sans antialiased">
         <x-banner />
-
+        @include('components.sidebar')
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             @include('components.navigation-menu')
 
@@ -41,5 +41,17 @@
         @stack('modals')
 
         @livewireScripts
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const toggleButton = document.getElementById('sidebar-toggle');
+                const sidebar = document.getElementById('sidebar');
+
+                // Toggle sidebar
+                toggleButton.addEventListener('click', function () {
+                    sidebar.classList.remove('hidden');
+                });
+            });
+        </script>
+
     </body>
 </html>
