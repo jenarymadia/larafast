@@ -96,4 +96,8 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->trial_is_used;
     }
+
+    public function clients() {
+        return $this->hasMany(Client::class,'user_id','id');
+    }
 }
