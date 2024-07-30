@@ -13,7 +13,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = Auth::user()->clients;
+        $clients = Auth::user()->clients()->paginate(5);
         return view('pages.client.index', compact('clients'));
     }
 
@@ -54,7 +54,6 @@ class ClientController extends Controller
         $client->postal_code = $validatedData['postal_code'];
         $client->save();
 
-        // Return a response, you can customize this based on your needs
         return response()->json(['message' => 'Client created successfully', 'client' => $client], 201);
     }
 
@@ -63,7 +62,7 @@ class ClientController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // Implementation here...
     }
 
     /**
@@ -71,7 +70,15 @@ class ClientController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $client = Client::findOrFail($id);
+
+        // Check if the logged-in user is the owner of the client
+        if ($client->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Return the edit view with the client data
+        return view('pages.client.edit', compact('client'));
     }
 
     /**
@@ -79,7 +86,29 @@ class ClientController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $client = Client::findOrFail($id);
+
+        // Check if the logged-in user is the owner of the client
+        if ($client->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:clients,email,'.$client->id,
+            'mobile_no' => 'required|string|max:15',
+            'street_address' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'region' => 'required|string|max:255',
+            'postal_code' => 'required|string|max:20',
+        ]);
+
+        // Update the client with the validated data
+        $client->update($validatedData);
+
+        return response()->json(['message' => 'Client updated successfully', 'client' => $client]);
     }
 
     /**
@@ -87,6 +116,16 @@ class ClientController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $client = Client::findOrFail($id);
+
+        // Check if the logged-in user is the owner of the client
+        if ($client->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $client->delete();
+
+        return response()->json(['message' => 'Client deleted successfully']);
     }
 }
+
