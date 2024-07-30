@@ -57,11 +57,10 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
                     @foreach($clients as $client)
-                    <tr class="bg-gray-50">
+                        <tr class="bg-gray-50">
                             <td class="relative px-7 sm:w-12 sm:px-6">
                                 <input type="checkbox" class="client-checkbox absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                             </td>
-                            <!-- Selected: "text-indigo-600", Not Selected: "text-gray-900" -->
                             <td class="whitespace-nowrap py-4 pr-3 text-sm font-medium text-gray-900">{{ $client->first_name.' '.$client->last_name }}</td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $client->email }}</td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $client->mobile_no }}</td>
@@ -72,13 +71,38 @@
                                 </span>
                             </td>
                             <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                            <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, Lindsay Walton</span></a>
-                        </td>
-                    </tr>
+                                <a href="{{ route('clients.edit', $client->id) }}" class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, {{ $client->first_name }}</span></a>
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
-
             </table>
+            <nav class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6" aria-label="Pagination">
+                <div class="hidden sm:block">
+                    <p class="text-sm text-gray-700">
+                        Showing
+                        <span class="font-medium">{{ $clients->firstItem() }}</span>
+                        to
+                        <span class="font-medium">{{ $clients->lastItem() }}</span>
+                        of
+                        <span class="font-medium">{{ $clients->total() }}</span>
+                        results
+                    </p>
+                </div>
+                <div class="flex flex-1 justify-between sm:justify-end">
+                    @if ($clients->onFirstPage())
+                        <span class="relative inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-gray-500">Previous</span>
+                    @else
+                        <a href="{{ $clients->previousPageUrl() }}" class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0">Previous</a>
+                    @endif
+
+                    @if ($clients->hasMorePages())
+                        <a href="{{ $clients->nextPageUrl() }}" class="relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0">Next</a>
+                    @else
+                        <span class="relative ml-3 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-gray-500">Next</span>
+                    @endif
+                </div>
+            </nav>
         </div>
     </div>
     <script>
