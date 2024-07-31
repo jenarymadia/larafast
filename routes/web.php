@@ -54,7 +54,8 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('clients', ClientController::class);
-
+    Route::post('/clients/bulk-delete', [ClientController::class, 'bulkDelete'])->name('clients.bulk_delete');
+    
     // Stripe Routes
     Route::prefix('stripe')->name('stripe.')->group(function () {
         Route::get('subscription-checkout/{price}', [StripeController::class, 'subscriptionCheckout'])->name('subscription.checkout');
