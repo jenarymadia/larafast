@@ -57,7 +57,7 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
-                            <input type="checkbox" wire:model="selectAll" class="-mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" wire:click="toggleSelectAll">
+                            <input type="checkbox" id="all-client-checkbox" class="-mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                         </th>
                         <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                             <button wire:click="sortBy('first_name')" class="flex items-center">
@@ -117,8 +117,8 @@
                 <tbody class="divide-y divide-gray-200 bg-white">
                     @forelse($clients as $client)
                         <tr>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <input type="checkbox" value="{{ $client->id }}" wire:model="selected" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            <td class="relative px-7 sm:w-12 sm:px-6">
+                                <input type="checkbox" value="{{ $client->id }}" type="checkbox" class="client-checkbox absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">{{ $client->first_name }}</td>
                             <td class="px-4 py-4 whitespace-nowrap">{{ $client->last_name }}</td>
@@ -144,4 +144,109 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const allClientCheckbox = document.getElementById('all-client-checkbox');
+        const clientCheckboxes = document.querySelectorAll('.client-checkbox');
+        const bulkActions = document.getElementById('bulk-actions');
+        const nameHead = document.getElementById('name_head');
+
+        function updateBulkActionsVisibility() {
+            const anyChecked = document.querySelectorAll('.client-checkbox:checked').length > 0;
+            if(anyChecked) {
+                bulkActions.style.display = 'block';
+                nameHead.style.display = 'none';
+            } else {
+                bulkActions.style.display = 'none';
+                nameHead.style.display = 'block';
+            }
+        }
+
+        function addIndicator(checkbox) {
+            // const indicator = checkbox.parentElement.querySelector('.absolute').remove();
+            const indicator2 = document.createElement('div');
+            indicator2.className = 'indicator absolute inset-y-0 left-0 w-0.5 bg-indigo-600';
+            checkbox.parentElement.insertBefore(indicator2, checkbox);
+        }
+
+        function removeIndicator(checkbox) {
+            const indicators = checkbox.parentElement.querySelectorAll('.indicator');
+            if(indicators.length > 0) {
+                indicators.forEach(indicator => {
+                    indicator.remove();
+                });
+            }
+        }
+
+        allClientCheckbox.addEventListener('change', function () {
+            clientCheckboxes.forEach(checkbox => {
+                checkbox.checked = allClientCheckbox.checked;
+                if (allClientCheckbox.checked) {
+                    addIndicator(checkbox);
+                } else {
+                    removeIndicator(checkbox);
+                }
+            });
+            // updateBulkActionsVisibility();
+        });
+
+        clientCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                if (checkbox.checked) {
+                    addIndicator(checkbox);
+                } else {
+                    removeIndicator(checkbox);
+                }
+                // updateBulkActionsVisibility();
+
+                // Update allClientCheckbox state
+                allClientCheckbox.checked = document.querySelectorAll('.client-checkbox:checked').length === clientCheckboxes.length;
+            });
+        });
+
+        // Deletion function
+        bulkActions.querySelector('button').addEventListener('click', function () {
+            const selectedClientIds = Array.from(document.querySelectorAll('.client-checkbox:checked'))
+                .map(checkbox => checkbox.closest('tr').dataset.clientId);
+
+            if (selectedClientIds.length > 0) {
+                // Confirm deletion
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This action cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        axios.post('{{ route("clients.bulk_delete") }}', {
+                            ids: selectedClientIds
+                        }, {
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                        })
+                        .then(response => {
+                            Swal.fire(
+                                'Deleted!',
+                                'The selected clients have been deleted.',
+                                'success'
+                            ).then(() => {
+                                location.reload(); // Reload the page to reflect changes
+                            });
+                        })
+                        .catch(error => {
+                            Swal.fire(
+                                'Error!',
+                                'There was an error deleting the clients. Please try again.',
+                                'error'
+                            );
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
 
