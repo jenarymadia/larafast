@@ -129,31 +129,31 @@ class ClientController extends Controller
     }
 
     public function bulkDelete(Request $request)
-{
-    $validated = $request->validate([
-        'ids' => 'required|array',
-        'ids.*' => 'integer|exists:clients,id',
-    ]);
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:clients,id',
+        ]);
 
-    $ids = $validated['ids'];
+        $ids = $validated['ids'];
 
-    $user = Auth::user();
+        $user = Auth::user();
 
-    $clientsToDelete = Client::whereIn('id', $ids)
-                            ->where('user_id', $user->id)
-                            ->get();
+        $clientsToDelete = Client::whereIn('id', $ids)
+                                ->where('user_id', $user->id)
+                                ->get();
 
-    if ($clientsToDelete->count() !== count($ids)) {
+        if ($clientsToDelete->count() !== count($ids)) {
+            return response()->json([
+                'message' => 'You can only delete your own clients.'
+            ], 403);
+        }
+
+        Client::whereIn('id', $ids)->where('user_id', $user->id)->delete();
+
         return response()->json([
-            'message' => 'You can only delete your own clients.'
-        ], 403);
+            'message' => 'Selected clients have been deleted successfully.'
+        ], 200);
     }
-
-    Client::whereIn('id', $ids)->where('user_id', $user->id)->delete();
-
-    return response()->json([
-        'message' => 'Selected clients have been deleted successfully.'
-    ], 200);
-}
 }
 
