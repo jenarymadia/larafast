@@ -110,6 +110,11 @@
                             </button>
                         </th>
                         <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                            <button class="flex items-center">
+                                Status
+                            </button>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 tracking-wider">
                             Actions
                         </th>
                     </tr>
@@ -125,6 +130,9 @@
                             <td class="px-4 py-4 whitespace-nowrap">{{ $client->email }}</td>
                             <td class="px-4 py-4 whitespace-nowrap">{{ $client->mobile_no }}</td>
                             <td class="px-4 py-4 whitespace-nowrap"></td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
+                            </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <a href="{{ route('clients.edit', $client) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                 <a href="#" wire:click.prevent="confirmDelete({{ $client->id }})" class="text-red-600 hover:text-red-900 ml-4">Delete</a>

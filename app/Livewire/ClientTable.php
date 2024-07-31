@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Client;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -24,7 +25,7 @@ class ClientTable extends Component
     public function render()
     {
         Log::info($this->search);
-        $clients = Client::query()
+        $clients = Auth::user()->clients()
             ->when($this->search, function($query) {
                 $query->where('first_name', 'like', '%' . $this->search . '%')
                       ->orWhere('last_name', 'like', '%' . $this->search . '%')
