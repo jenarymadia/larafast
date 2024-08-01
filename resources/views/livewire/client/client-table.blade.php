@@ -129,9 +129,15 @@
                             <td class="px-4 py-4 whitespace-nowrap">{{ $client->last_name }}</td>
                             <td class="px-4 py-4 whitespace-nowrap">{{ $client->email }}</td>
                             <td class="px-4 py-4 whitespace-nowrap">{{ $client->mobile_no }}</td>
-                            <td class="px-4 py-4 whitespace-nowrap"></td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
+                                {{ $client->street_address }}, {{ $client->city }}, {{ $client->region }} {{ $client->postal_code }}
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                @if($client->status)
+                                    <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
+                                @else
+                                    <span class="inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Inactive</span>
+                                @endif
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <a href="{{ route('clients.edit', $client) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
