@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Client;
 
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
@@ -33,9 +33,9 @@ class ClientTable extends Component
                       ->orWhere('mobile_no', 'like', '%' . $this->search . '%');
             })
             ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+            ->paginate(5);
 
-        return view('livewire.client-table', [
+        return view('livewire.client.client-table', [
             'clients' => $clients,
         ]);
     }
