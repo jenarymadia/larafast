@@ -7,14 +7,16 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
 use Rappasoft\LaravelLivewireTables\Views\Columns\LinkColumn;
+use Illuminate\Database\Eloquent\Builder;
 
 class ClientTable extends DataTableComponent
 {
     protected $model = Client::class;
 
-    public function query()
+    public function builder(): Builder
     {
-        return Auth::user()->clients();
+        return Client::query()
+        ->where("user_id", Auth::id());
     }
 
     public array $bulkActions = [
