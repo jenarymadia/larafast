@@ -8,9 +8,12 @@ use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
 use Rappasoft\LaravelLivewireTables\Views\Columns\LinkColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class ClientTable extends DataTableComponent
 {
+    use LivewireAlert; 
+    
     protected $model = Client::class;
 
     public function builder(): Builder
@@ -52,5 +55,27 @@ class ClientTable extends DataTableComponent
             Column::make("Updated at", "updated_at")
                 ->sortable(),
         ];
+    }
+
+    public function deleteSelected()
+    {
+        // Ensure there are selected clients
+        if (empty($this->getSelected())) {
+            session()->flash('error', 'No clients selected for deletion.');
+            return;
+        }
+
+        // Delete selected clients
+        Client::whereIn('id', $this->selected)->delete();
+
+        // Clear the selected array
+        $this->clearSelected();
+
+        // Provide feedback
+        $this->alert('success', __('Client successfully created'), [
+            'toast' => false,
+            'position' => 'center',
+            'timer' => 2000, // Optional: Set timer for auto-dismissal
+        ]);
     }
 }
