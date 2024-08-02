@@ -5,11 +5,18 @@ namespace App\Livewire;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Client;
+use Illuminate\Support\Facades\Auth;
 use Rappasoft\LaravelLivewireTables\Views\Columns\LinkColumn;
 
 class ClientTable extends DataTableComponent
 {
     protected $model = Client::class;
+
+    public function query()
+    {
+        return Auth::user()->clients();
+    }
+
     public array $bulkActions = [
         'deleteSelected' => 'Delete Selected',
     ];
