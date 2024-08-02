@@ -24,16 +24,7 @@ class ClientTable extends Component
 
     public function render()
     {
-        Log::info($this->search);
-        $clients = Auth::user()->clients()
-            ->when($this->search, function($query) {
-                $query->where('first_name', 'like', '%' . $this->search . '%')
-                      ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                      ->orWhere('email', 'like', '%' . $this->search . '%')
-                      ->orWhere('mobile_no', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(5);
+        $clients = $this->getClients()->paginate(5);
 
         return view('livewire.client.client-table', [
             'clients' => $clients,
@@ -51,9 +42,34 @@ class ClientTable extends Component
     }
 
     public function toggleSelectAll()
-    {
+    {   
+        $clients = $this->getClients()->paginate(5);
+
         $this->selectAll = !$this->selectAll;
-        $this->selected = $this->selectAll ? Client::pluck('id')->toArray() : [];
+        $this->selected = $this->selectAll ? $clients->pluck('id')->toArray() : [];
+        Log::info($this->selected);
+        Log::info($this->selectAll);
+    }
+
+    public function toggleSelection($clientId)
+    {
+        if (in_array($clientId, $this->selected)) {
+            // Remove client from selection
+            $this->selected = array_diff($this->selected, [$clientId]);
+        } else {
+            // Add client to selection
+            $this->selected[] = $clientId;
+        }
+
+        // If all items were selected but one is deselected, update `selectAll` status
+        if (count($this->selected) === $this->getClients()->count()) {
+            $this->selectAll = true;
+        } else {
+            $this->selectAll = false;
+        }
+
+        Log::info($this->selected);
+        Log::info($this->selectAll);
     }
 
     public function updatedSelected($value)
@@ -72,5 +88,17 @@ class ClientTable extends Component
     public function performSearch()
     {
         // Search is handled directly through the $search property
+    }
+
+    private function getClients()
+    {
+        return Auth::user()->clients()
+            ->when($this->search, function($query) {
+                $query->where('first_name', 'like', '%' . $this->search . '%')
+                      ->orWhere('last_name', 'like', '%' . $this->search . '%')
+                      ->orWhere('email', 'like', '%' . $this->search . '%')
+                      ->orWhere('mobile_no', 'like', '%' . $this->search . '%');
+            })
+            ->orderBy($this->sortField, $this->sortDirection);
     }
 }
