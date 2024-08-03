@@ -28,7 +28,13 @@ class ClientTable extends DataTableComponent
 
     public function configure(): void
     {
-        $this->setPrimaryKey('id');
+        $this->setPrimaryKey('id')
+        ->setTableRowUrl(function($row) {
+            return route('clients.edit', $row);
+        })
+        ->setTableRowUrlTarget(function($row) {
+            return '_blank';
+        });
     }
 
     public function columns(): array
@@ -36,12 +42,6 @@ class ClientTable extends DataTableComponent
         return [
             Column::make("Id", "id")
                 ->hideIf(true),
-            LinkColumn::make('Action')
-            ->title(fn($row) => 'Edit')
-            ->location(fn($row) => route('clients.edit', $row->id))
-            ->attributes(fn($row) => [
-                'class' => "font-medium text-blue-600 dark:text-blue-500 hover:underline"
-            ]),
             Column::make("First Name", "first_name")
                 ->sortable(),
             Column::make("Last Name", "last_name")
