@@ -31,9 +31,6 @@ class ClientTable extends DataTableComponent
         $this->setPrimaryKey('id')
         ->setTableRowUrl(function($row) {
             return route('clients.edit', $row);
-        })
-        ->setTableRowUrlTarget(function($row) {
-            return '_blank';
         });
     }
 
