@@ -77,16 +77,39 @@
                             @error('postal_code') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror 
                         </div>
 
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" wire:model="status" value="1" class="sr-only peer" checked>
-                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Status</span>
-                        </label>
-                        @error('status') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        <div class="sm:col-span-3">
+                            <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Status</label>
+                            <div class="relative">
+                                <select wire:model="status" class="select select-bordered block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    @foreach ($transaction_statuses as $status)
+                                        <option value="{{ $status->value }}">{{ $status->key }}</option>
+                                    @endforeach
+                                </select> 
+                            </div>
+                            @error('status') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror 
+                        </div>
+
+                        <div class="sm:col-span-3" wire:ignore>
+                            <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Tags</label>
+                            <div class="relative">
+                                <div class="relative">
+                                    <input id="testing-input" type="text" class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-3" wire:ignore>
+                            <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Note</label>
+                            <div class="relative">
+                                <div class="relative">
+                                <textarea wire:model="note" rows="4" name="comment" id="comment" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 bg-gray-50 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
+                                </div>
+                            </div>
+                            @error('note') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror 
+                        </div>
                     </div>
                 </div>
             </div>
-
             <div class="mt-6 flex items-center justify-end gap-x-6">
                 <a href="{{ route('clients.index') }}" type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
                 <button 
@@ -103,3 +126,22 @@
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <x-livewire-alert::scripts />
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var inputElem = document.getElementById('testing-input');
+        var tagify = new Tagify(inputElem, {
+            whitelist: []
+        });
+        tagify.addTags(['asdasd']);
+
+        // Additional Tagify or Livewire setup if needed
+        tagify.on('change', function(e) {
+            @this.set('tags', tagify.value.map(tag => tag.value));
+        });
+
+        Livewire.on('tagsUpdated', (tags) => {
+            tagify.removeAllTags();
+            tagify.addTags(tags);
+        });
+    });
+</script>
