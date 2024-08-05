@@ -98,7 +98,7 @@
                             </div>
                         </div>
 
-                        <div class="sm:col-span-3" wire:ignore>
+                        <div class="sm:col-span-3">
                             <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Note</label>
                             <div class="relative">
                                 <div class="relative">
