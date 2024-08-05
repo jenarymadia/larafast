@@ -6,13 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class Client extends Model
+class ClientTag extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
-
-    /**
+/**
      * The "booted" method of the model.
      *
      * @return void
@@ -22,10 +20,5 @@ class Client extends Model
         static::creating(function ($client) {
             $client->user_id = Auth::id();
         });
-    }
-
-    public function tags()
-    {
-        return $this->hasMany(ClientTag::class, 'client_id', 'id');
     }
 }

@@ -5,8 +5,8 @@ namespace App\Livewire;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Client;
+use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
-use Rappasoft\LaravelLivewireTables\Views\Columns\LinkColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
@@ -36,6 +36,7 @@ class ClientTable extends DataTableComponent
 
     public function columns(): array
     {
+        $statuses = Status::where('module', 'lead')->get();
         return [
             Column::make("Id", "id")
                 ->hideIf(true),
@@ -49,12 +50,9 @@ class ClientTable extends DataTableComponent
                 ->sortable(),
             Column::make('Status')
             ->format(
-                function($value, $row, Column $column) {
-                    if($value == 1) {
-                        return '<span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>';
-                    } else {
-                        return '<span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Inactive</span>';
-                    }
+                function($value, $row, Column $column) use ($statuses) {
+                    $status_key = $statuses->where('value', $value)->first()->key;
+                    return "<span class='inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20'>$status_key</span>";
                 }
             )->html(),
             Column::make("Created at", "created_at")
