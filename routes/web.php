@@ -6,12 +6,15 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\OgImageController;
 use App\Http\Controllers\Payments\LemonSqueezyController;
 use App\Http\Controllers\Payments\PaddleController;
 use App\Http\Controllers\Payments\StripeController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Middleware\Subscribed;
+use App\Livewire\ClientJob\Create as JobCreation;
+use App\Livewire\ClientJob\TableList as JobTable;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index']);
@@ -55,7 +58,10 @@ Route::middleware([
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('clients', ClientController::class);
     Route::post('/clients/bulk-delete', [ClientController::class, 'bulkDelete'])->name('clients.bulk_delete');
-    
+
+    Route::get('/jobs', JobTable::class)->name('jobs.index');     
+    Route::get('/jobs/create', JobCreation::class)->name('jobs.create');     
+
     // Stripe Routes
     Route::prefix('stripe')->name('stripe.')->group(function () {
         Route::get('subscription-checkout/{price}', [StripeController::class, 'subscriptionCheckout'])->name('subscription.checkout');
