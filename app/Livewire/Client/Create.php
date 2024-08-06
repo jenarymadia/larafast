@@ -3,6 +3,8 @@
 namespace App\Livewire\Client;
 
 use App\Models\Client;
+use App\Models\ClientTag;
+use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -21,7 +23,10 @@ class Create extends Component
     public $city;
     public $region;
     public $postal_code;
-    public $status = true;
+    public $tags = [];
+    public $status;
+    public $note;
+    public $transaction_statuses;
 
     protected $rules = [
         'first_name' => 'required|string|max:255',
@@ -32,17 +37,28 @@ class Create extends Component
         'city' => 'required|string|max:255',
         'region' => 'required|string|max:255',
         'postal_code' => 'required|numeric',
-        'status' => 'required|boolean',
+        'status' => 'required',
+        'note' => 'required',
     ];
+
+    public function mount()
+    {
+        $this->transaction_statuses = Status::where('module', 'lead')->get();
+    }
 
     public function store(Request $request)
     {
             // Validate the input data based on the defined rules
         $validatedData = $this->validate();
-        Log::info($validatedData);
         // Create a new client with the validated data
-        Client::create($validatedData);
-
+        $client = Client::create($validatedData);
+        
+        foreach ($this->tags as $tag) {
+            ClientTag::create([
+                'tag' => $tag,
+                'client_id' => $client->id,
+            ]);
+        }
         // Reset form fields
         $this->reset(['first_name', 'last_name', 'email', 'mobile_no', 'street_address', 'city', 'region', 'postal_code']);
 
