@@ -4,10 +4,11 @@ namespace App\Livewire\ClientJob;
 
 use Livewire\Component;
 
-class Create extends Component
+class TableList extends Component
 {
+   
     public function render()
     {
-        return view('livewire.client-job.create');
+        return view('livewire.client-job.list');
     }
 }

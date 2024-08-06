@@ -10,11 +10,12 @@ use Rappasoft\LaravelLivewireTables\Views\Columns\LinkColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
-class Table extends DataTableComponent
+class DataTable extends DataTableComponent
 {
     use LivewireAlert;
 
     protected $model = ClientJob::class;
+    public $title = "title";
 
     public function builder(): Builder
     {
@@ -29,13 +30,6 @@ class Table extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id');
-
-        $this->setLayout('components.layouts.app', [
-            'title' => 'Client Jobs',
-            'actions' => [
-                
-            ]
-        ]);
     }
 
     public function columns(): array
@@ -44,6 +38,14 @@ class Table extends DataTableComponent
             Column::make("Id", "id")
                 ->hideIf(true),
             Column::make("Job Title", "title")
+                ->sortable(),
+            Column::make("Address", "address")
+                ->sortable(),
+            Column::make("Address", "address")
+                ->sortable(),
+            Column::make("Status", "status")
+                ->sortable(),
+            Column::make("Schedule", "scheduled_date_time")
                 ->sortable(),
             Column::make("Created at", "created_at")
                 ->sortable(),

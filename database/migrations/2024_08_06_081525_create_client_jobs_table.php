@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();            
             $table->foreignId('user_id');
             $table->string('title');
-            $table->text('description');
+            $table->text('notes')->nullable();
+            $table->string('client_name');
             $table->text('address');
-            $table->dateTime('scheduled_date_time');
+            $table->date('schedule_date');
+            $table->time('schedule_time');
+            $table->decimal('price', 11, 2);
             $table->string('status');
             $table->timestamps();
         });
