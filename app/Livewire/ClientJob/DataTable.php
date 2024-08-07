@@ -74,7 +74,7 @@ class DataTable extends DataTableComponent
         }
 
         // Delete selected clients
-        Client::whereIn('id', $this->selected)->delete();
+        ClientJob::whereIn('id', $this->selected)->delete();
 
         // Clear the selected array
         $this->clearSelected();
