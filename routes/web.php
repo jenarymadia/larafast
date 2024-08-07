@@ -13,8 +13,9 @@ use App\Http\Controllers\Payments\PaddleController;
 use App\Http\Controllers\Payments\StripeController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Middleware\Subscribed;
-use App\Livewire\ClientJob\Create as JobCreation;
 use App\Livewire\ClientJob\TableList as JobTable;
+use App\Livewire\ClientJob\Create as JobCreation;
+use App\Livewire\ClientJob\Edit as JobEdit;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index']);
@@ -59,8 +60,11 @@ Route::middleware([
     Route::resource('clients', ClientController::class);
     Route::post('/clients/bulk-delete', [ClientController::class, 'bulkDelete'])->name('clients.bulk_delete');
 
-    Route::get('/jobs', JobTable::class)->name('jobs.index');     
-    Route::get('/jobs/create', JobCreation::class)->name('jobs.create');     
+    Route::prefix('jobs')->name('jobs.')->group(function () {
+        Route::get('/', JobTable::class)->name('index');
+        Route::get('/create', JobCreation::class)->name('create');
+        Route::get('/{job}/edit', JobEdit::class)->name('edit');
+    });
 
     // Stripe Routes
     Route::prefix('stripe')->name('stripe.')->group(function () {
