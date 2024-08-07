@@ -2,103 +2,85 @@
 
 namespace App\Livewire\Client;
 
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
+use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Client;
+use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Livewire\Component;
-use Livewire\WithPagination;
+use Illuminate\Database\Eloquent\Builder;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
-class ClientTable extends Component
+class ClientTable extends DataTableComponent
 {
-    use WithPagination;
+    use LivewireAlert; 
+    
+    protected $model = Client::class;
 
-    public $search = '';
-    public $sortField = 'first_name';
-    public $sortDirection = 'asc';
-    public $selected = [];
-    public $selectAll = false;
-
-    protected $updatesQueryString = ['search', 'sortField', 'sortDirection'];
-
-    protected $listeners = ['performSearch'];
-
-    public function render()
+    public function builder(): Builder
     {
-        $clients = $this->getClients()->paginate(5);
-
-        return view('livewire.client.client-table', [
-            'clients' => $clients,
-        ]);
+        return Client::query()
+        ->where("user_id", Auth::id());
     }
 
-    public function sortBy($field)
+    public array $bulkActions = [
+        'deleteSelected' => 'Delete Selected',
+    ];
+
+    public function configure(): void
     {
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortField = $field;
-            $this->sortDirection = 'asc';
-        }
+        $this->setPrimaryKey('id')
+        ->setTableRowUrl(function($row) {
+            return route('clients.edit', $row);
+        });
     }
 
-    public function toggleSelectAll()
-    {   
-        $clients = $this->getClients()->paginate(5);
-
-        $this->selectAll = !$this->selectAll;
-        $this->selected = $this->selectAll ? $clients->pluck('id')->toArray() : [];
-        Log::info($this->selected);
-        Log::info($this->selectAll);
-    }
-
-    public function toggleSelection($clientId)
+    public function columns(): array
     {
-        if (in_array($clientId, $this->selected)) {
-            // Remove client from selection
-            $this->selected = array_diff($this->selected, [$clientId]);
-        } else {
-            // Add client to selection
-            $this->selected[] = $clientId;
-        }
-
-        // If all items were selected but one is deselected, update `selectAll` status
-        if (count($this->selected) === $this->getClients()->count()) {
-            $this->selectAll = true;
-        } else {
-            $this->selectAll = false;
-        }
-
-        Log::info($this->selected);
-        Log::info($this->selectAll);
-    }
-
-    public function updatedSelected($value)
-    {
-        if ($this->selectAll) {
-            $this->selectAll = false;
-        }
+        $statuses = Status::where('module', 'lead')->get();
+        return [
+            Column::make("Id", "id")
+                ->hideIf(true),
+            Column::make("First Name", "first_name")
+                ->sortable(),
+            Column::make("Last Name", "last_name")
+                ->sortable(),
+            Column::make("Email Address", "email")
+                ->sortable(),
+            Column::make("Phone Number", "mobile_no")
+                ->sortable(),
+            Column::make('Status')
+            ->format(
+                function($value, $row, Column $column) use ($statuses) {
+                    $status_key = $statuses->where('value', $value)->first()->key;
+                    return "<span class='inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20'>$status_key</span>";
+                }
+            )->html(),
+            Column::make("Created at", "created_at")
+                ->sortable(),
+            Column::make("Updated at", "updated_at")
+                ->sortable(),
+        ];
     }
 
     public function deleteSelected()
     {
+        // Ensure there are selected clients
+        if (empty($this->getSelected())) {
+            session()->flash('error', 'No clients selected for deletion.');
+            return;
+        }
+
+        // Delete selected clients
         Client::whereIn('id', $this->selected)->delete();
-        $this->selected = [];
-    }
 
-    public function performSearch()
-    {
-        // Search is handled directly through the $search property
-    }
+        // Clear the selected array
+        $this->clearSelected();
 
-    private function getClients()
-    {
-        return Auth::user()->clients()
-            ->when($this->search, function($query) {
-                $query->where('first_name', 'like', '%' . $this->search . '%')
-                      ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                      ->orWhere('email', 'like', '%' . $this->search . '%')
-                      ->orWhere('mobile_no', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection);
+        // Provide feedback
+        $this->alert('success', __('Client successfully deleted'), [
+            'toast' => false,
+            'position' => 'center',
+            'timer' => 2000, // Optional: Set timer for auto-dismissal
+        ]);
     }
 }

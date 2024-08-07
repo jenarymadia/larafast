@@ -11,7 +11,7 @@
                     </a>
                 </div>
             </div>
-            <livewire:client-table />
+            <livewire:Client.client-table />
         </div>
     </div>
 </x-app-layout>
