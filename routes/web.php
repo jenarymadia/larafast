@@ -16,6 +16,8 @@ use App\Http\Middleware\Subscribed;
 use App\Livewire\ClientJob\TableList as JobTable;
 use App\Livewire\ClientJob\Create as JobCreation;
 use App\Livewire\ClientJob\Edit as JobEdit;
+use App\Livewire\Staff\Create as StaffCreation;
+use App\Livewire\Staff\Edit as StaffEdit;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index']);
@@ -64,6 +66,11 @@ Route::middleware([
         Route::get('/', JobTable::class)->name('index');
         Route::get('/create', JobCreation::class)->name('create');
         Route::get('/{job}/edit', JobEdit::class)->name('edit');
+    });
+
+    Route::prefix('staffs')->name('staffs.')->group(function () {
+        Route::get('/create', StaffCreation::class)->name('create');
+        Route::get('/{staff}/edit', StaffEdit::class)->name('edit');
     });
 
     // Stripe Routes
