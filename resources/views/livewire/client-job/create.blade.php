@@ -107,7 +107,13 @@
                         </div>
 
                         <div class="sm:col-span-full">
-                            <div class="relative">
+                            <div class="relative"
+                                x-data="{ isUploading: false, progress: 0}"
+                                x-on:livewire-upload-start="isUploading = true"
+                                x-on:livewire-upload-finish="isUploading = false; progress = 0"
+                                x-on:livewire-upload-error="isUploading = false; progress = 0"
+                                x-on:livewire-upload-progress="progress = $event.detail.progress"
+                                >
                                 <div class="flex items-center justify-center w-full">
                                     <label for="dropzone-filefile" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                                         <div class="flex flex-col items-center justify-center pt-5 pb-6">
@@ -120,11 +126,27 @@
                                         <input id="dropzone-filefile" type="file" class="hidden" wire:model="files" multiple/>
                                     </label>
                                 </div> 
+                                <!-- Progress Bar -->
+                                <div x-show="isUploading" class="mt-4">
+                                    <div class="relative pt-1">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <span x-text="progress + '%'"></span>
+                                            </div>
+                                        </div>
+                                        <div class="flex mb-2 items-center justify-between">
+                                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                                <div class="bg-blue-600 h-2.5 rounded-full" x-bind:style="'width: ' + progress + '%'" ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 @error('files.*') <span class="text-red-500 text-xs italic">{{ $message }}</span> @enderror 
                             </div>
                         </div>
                         @if ($files)
                         <div class="sm:col-span-3">
+                            <label for="notes" class="block text-sm font-bold leading-6 text-gray-900">For Upload : </label>
                             <div class="space-y-8 mt-2">
                                 @foreach ($files as $file)
                                     <div class="flex flex-col">
