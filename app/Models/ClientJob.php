@@ -22,4 +22,9 @@ class ClientJob extends Model
             $client->user_id = Auth::id();
         });
     }
+
+    public function attachments()
+    {
+        return $this->hasMany(JobAttachment::class);
+    }
 }

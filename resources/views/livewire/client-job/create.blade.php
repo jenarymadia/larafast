@@ -100,14 +100,46 @@
                             <label for="notes" class="block text-sm font-medium leading-6 text-gray-900">Note</label>
                             <div class="relative">
                                 <div class="relative">
-                                <textarea wire:model="note" rows="4" name="comment" id="comment" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 bg-gray-50 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 @error('note') border-red-500 @enderror"></textarea>
+                                <textarea wire:model="notes" rows="4" name="comment" id="comment" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 bg-gray-50 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 @error('note') border-red-500 @enderror"></textarea>
                                 </div>
                             </div>
-                            @error('note') <span class="text-red-500 text-xs italic">{{ $message }}</span> @enderror 
+                            @error('notes') <span class="text-red-500 text-xs italic">{{ $message }}</span> @enderror 
                         </div>
+
+                        <div class="sm:col-span-full">
+                            <div class="relative">
+                                <div class="flex items-center justify-center w-full">
+                                    <label for="dropzone-filefile" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                            </svg>
+                                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                                        </div>
+                                        <input id="dropzone-filefile" type="file" class="hidden" wire:model="files" multiple/>
+                                    </label>
+                                </div> 
+                                @error('files.*') <span class="text-red-500 text-xs italic">{{ $message }}</span> @enderror 
+                            </div>
+                        </div>
+                        @if ($files)
+                        <div class="sm:col-span-3">
+                            <div class="space-y-8 mt-2">
+                                @foreach ($files as $file)
+                                    <div class="flex flex-col">
+                                        <div class="flex">
+                                            <p class="text-sm text-gray-500 font-semibold flex-1">{{ $file->getClientOriginalName() }} <span class="ml-2">({{ number_format($file->getSize() / 1024, 2) }} KB)</span></p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
+
             <div class="mt-6 flex items-center justify-end gap-x-6">
                 <a wire:navigate href="{{ route('jobs.index') }}" type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
                 <button 
@@ -123,22 +155,3 @@
 </div>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <x-livewire-alert::scripts />
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var inputElem = document.getElementById('testing-input');
-        var tagify = new Tagify(inputElem, {
-            whitelist: []
-        });
-        tagify.addTags(['asdasd']);
-
-        // Additional Tagify or Livewire setup if needed
-        tagify.on('change', function(e) {
-            @this.set('tags', tagify.value.map(tag => tag.value));
-        });
-
-        Livewire.on('tagsUpdated', (tags) => {
-            tagify.removeAllTags();
-            tagify.addTags(tags);
-        });
-    });
-</script>

@@ -3,13 +3,17 @@
 namespace App\Livewire\ClientJob;
 
 use App\Models\ClientJob;
+use App\Models\JobAttachment;
 use App\Models\Status;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Edit extends Component
 {
-    use LivewireAlert; // Use this trait for SweetAlerts
+    use LivewireAlert, WithFileUploads; // Use this trait for SweetAlerts
 
     public $title;
     public $client_name;
@@ -23,6 +27,8 @@ class Edit extends Component
     public $notes;
     public $transaction_statuses;
     public $job;
+    public $files;
+    public $attachments;
 
     protected $rules = [
         'title' => 'required|string|max:255',
@@ -34,7 +40,8 @@ class Edit extends Component
         'price' => 'required|string|max:255',
         'staff_id' => '',
         'status' => 'required',
-        'notes' => 'required'
+        'notes' => 'required',
+        'files.*' => 'file|mimes:jpg,png,pdf,mp4,tiff,mov,h264|max:10240',
     ];
 
     public function mount(ClientJob $job)
@@ -50,7 +57,7 @@ class Edit extends Component
         $this->staff_id = $job->staff_id;
         $this->status = $job->status;
         $this->notes = $job->notes;
-
+        $this->attachments = $job->attachments;
         $this->transaction_statuses = Status::where('module', 'jobs')->get();
     }
 
@@ -58,7 +65,17 @@ class Edit extends Component
     {
         $validatedData = $this->validate();
 
-        $this->job->update($validatedData);
+        $this->job->update(Arr::except($validatedData, ['files']));
+
+        foreach ($this->files as $file) {
+            $filePath = $file->store('job-files/'.$this->job->id);
+            JobAttachment::create([
+                'client_job_id' => $this->job->id,
+                'file_path' => Storage::url($filePath),
+                'file_name' => $file->getClientOriginalName(),
+                'file_type' => $file->getClientMimeType(),
+            ]);
+        }
 
         // Use this for SweetAlerts
         $this->alert('success', __('Job successfully updated'), [
@@ -74,5 +91,10 @@ class Edit extends Component
     public function render()
     {
         return view('livewire.client-job.edit');
+    }
+
+    public function deleteAttachment($id)
+    {
+        $this->attachments->find($id)->delete();
     }
 }
