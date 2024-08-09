@@ -55,11 +55,16 @@ class Create extends Component
  
         foreach ($this->files as $file) {
             $filePath = $file->store('job-files/'.$clientJob->id);
-            // Create a record in the ClientFile table
+    
+            // Extract the encrypted file name from the file path
+            $encryptedFileName = basename($filePath);
+        
+            // Create a record in the JobAttachment table
             JobAttachment::create([
                 'client_job_id' => $clientJob->id,
-                'file_path' => Storage::url($filePath),
+                'file_path' => $filePath,
                 'file_name' => $file->getClientOriginalName(),
+                'encrypted_file_name' => $encryptedFileName, // Save the encrypted file name
                 'file_type' => $file->getClientMimeType(),
             ]);
         }

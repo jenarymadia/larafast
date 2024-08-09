@@ -140,22 +140,25 @@
                         @endif
                         @if ($attachments->count() > 0)
                         <div class="sm:col-span-3 sm:col-end-7">
-                            <label for="notes" class="block text-sm font-bold leading-6 text-gray-900">Attachments : </label>
+                            <label for="notes" class="block text-sm font-bold leading-6 text-gray-900">Attachments : 
+                                <button wire:click="downloadAllAttachmentsAsZip" type="button" class="rounded bg-white px-2 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                    Download All
+                                </button>
+                            </label>
                             <div class="space-y-8 mt-2">
                                 @foreach ($attachments as $file)
                                     <div class="flex flex-col">
                                         <div class="flex">
                                             <p class="text-sm text-gray-500 font-semibold flex-1">{{ $file->file_name }} <span class="ml-2"></span></p>
-                                            
-                                            <svg wire:click="deleteAttachment({{ $file->id }})" xmlns="http://www.w3.org/2000/svg" class="w-3 cursor-pointer shrink-0 fill-black hover:fill-red-500"
-                                            viewBox="0 0 320.591 320.591">
-                                            <path
-                                                d="M30.391 318.583a30.37 30.37 0 0 1-21.56-7.288c-11.774-11.844-11.774-30.973 0-42.817L266.643 10.665c12.246-11.459 31.462-10.822 42.921 1.424 10.362 11.074 10.966 28.095 1.414 39.875L51.647 311.295a30.366 30.366 0 0 1-21.256 7.288z"
-                                                data-original="#000000"></path>
-                                            <path
-                                                d="M287.9 318.583a30.37 30.37 0 0 1-21.257-8.806L8.83 51.963C-2.078 39.225-.595 20.055 12.143 9.146c11.369-9.736 28.136-9.736 39.504 0l259.331 257.813c12.243 11.462 12.876 30.679 1.414 42.922-.456.487-.927.958-1.414 1.414a30.368 30.368 0 0 1-23.078 7.288z"
-                                                data-original="#000000"></path>
-                                            </svg>
+                                                <!-- Download Button -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" wire:click="downloadAttachment({{ $file->id }})" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="cursor-pointer size-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M9 12l3 3m0 0 3-3m-3 3V2.25" />
+                                                </svg>
+
+                                                <!-- Delete Button -->
+                                                <svg wire:click="deleteAttachment({{ $file->id }})" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                                </svg>
                                         </div>
                                     </div>
                                 @endforeach

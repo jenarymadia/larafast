@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('client_job_id')->constrained('client_jobs')->onDelete('cascade');
             $table->string('file_path');
             $table->string('file_name');
+            $table->string('encrypted_file_name'); 
             $table->string('file_type');
             $table->timestamps();
         });

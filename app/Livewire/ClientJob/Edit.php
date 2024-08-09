@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use ZipArchive;
 
 class Edit extends Component
 {
@@ -69,10 +70,16 @@ class Edit extends Component
 
         foreach ($this->files as $file) {
             $filePath = $file->store('job-files/'.$this->job->id);
+    
+            // Extract the encrypted file name from the file path
+            $encryptedFileName = basename($filePath);
+        
+            // Create a record in the JobAttachment table
             JobAttachment::create([
                 'client_job_id' => $this->job->id,
-                'file_path' => Storage::url($filePath),
+                'file_path' => $filePath,
                 'file_name' => $file->getClientOriginalName(),
+                'encrypted_file_name' => $encryptedFileName, // Save the encrypted file name
                 'file_type' => $file->getClientMimeType(),
             ]);
         }
@@ -97,4 +104,42 @@ class Edit extends Component
     {
         $this->attachments->find($id)->delete();
     }
+
+    public function downloadAttachment($fileId)
+    {
+        $file = JobAttachment::findOrFail($fileId);
+
+        return response()->download(storage_path('app/'.$file->file_path), $file->file_name);
+    }
+
+    public function downloadAllAttachmentsAsZip()
+    {
+        $attachments = JobAttachment::where('client_job_id', $this->job->id)->get();
+
+        if ($attachments->isEmpty()) {
+            $this->alert('info', __('No attachments found to download.'));
+            return;
+        }
+
+        $zip = new ZipArchive();
+        $zipName = 'attachments-' . $this->job->id . '.zip';
+        $zipPath = storage_path('app/public/' . $zipName);
+
+        if ($zip->open($zipPath, ZipArchive::CREATE) !== true) {
+            $this->alert('error', __('Could not create ZIP file.'));
+            return;
+        }
+
+        foreach ($attachments as $attachment) {
+            $filePath = storage_path('app/' . $attachment->file_path);
+            if (file_exists($filePath)) {
+                $zip->addFile($filePath, $attachment->file_name);
+            }
+        }
+
+        $zip->close();
+
+        return response()->download($zipPath, $zipName)->deleteFileAfterSend(true);
+    }
+
 }
